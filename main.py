@@ -31,9 +31,9 @@ class MainWindow(QMainWindow):
         edit_menu_item = self.menuBar().addMenu("&Edit")
         help_menu_item = self.menuBar().addMenu("&Help")
 
-        add_student_action = QAction(QIcon("icons/add.png"), "Add Keyboard", self)
-        add_student_action.triggered.connect(self.insert)
-        file_menu_item.addAction(add_student_action)
+        add_keyboard_action = QAction(QIcon("icons/add.png"), "Add Keyboard", self)
+        add_keyboard_action.triggered.connect(self.insert)
+        file_menu_item.addAction(add_keyboard_action)
 
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         toolbar.setMovable(True)
         self.addToolBar(toolbar)
 
-        toolbar.addAction(add_student_action)
+        toolbar.addAction(add_keyboard_action)
 
         # STATUS BAR
         self.statusbar = QStatusBar()
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM keebs")
-        result = cursor.fetchall()
+        result = cursor.fetchall() 
         self.table.setRowCount(0)
         for row_number, row_data in enumerate(result):
             self.table.insertRow(row_number)
@@ -122,16 +122,15 @@ class DeleteDialog(QDialog):
         layout.addWidget(no, 1, 1)
         self.setLayout(layout)
 
-        yes.clicked.connect(self.delete_student)
+        yes.clicked.connect(self.delete_item)
 
-    def delete_student(self):
-        # Get selected row index and student id
+    def delete_item(self):
         index = main_window.table.currentRow()
-        student_id = main_window.table.item(index, 0).text()
+        item_id = main_window.table.item(index, 0).text()
 
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        cursor.execute("DELETE from keebs WHERE id = %s", (student_id,))
+        cursor.execute("DELETE from keebs WHERE id = %s", (item_id,))
         connection.commit()
         cursor.close()
         connection.close()
@@ -154,7 +153,6 @@ class InsertDialog(QDialog):
 
         layout = QVBoxLayout()
 
-        # Add student name widget
         self.keyboard_name = QLineEdit()
         self.keyboard_name.setPlaceholderText("Name")
         layout.addWidget(self.keyboard_name)
@@ -176,12 +174,12 @@ class InsertDialog(QDialog):
 
         # Add a submit button
         button = QPushButton("Add Product")
-        button.clicked.connect(self.add_student)
+        button.clicked.connect(self.add_keyboard)
         layout.addWidget(button)
 
         self.setLayout(layout)
 
-    def add_student(self):
+    def add_keyboard(self):
         name = self.keyboard_name.text()
         product = self.product_type.itemText(self.product_type.currentIndex())
         ship = self.ship.text()
